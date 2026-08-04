@@ -29,5 +29,3 @@ int main()
     print_hex_dump(string, n);
     return 0;
 }
-
-
