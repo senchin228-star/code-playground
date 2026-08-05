@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 char* GetMemTotal()
 {
@@ -27,12 +28,16 @@ char* GetMemTotal()
     if (fclose(f) != 0) {
         perror("fclose");
     }
-    pfree(string);
+    free(string);
     return memory;
 }
 int main(){
-    char* mem = GetMemTotal();
-    printf("%s", mem);
-    free(mem);
+    char* memstr = GetMemTotal();
+    int mem = 0;
+    for (int a = 0; memstr[a] != '\0'; a++) {
+    mem = mem * 10 + (memstr[a] - '0');
+    }
+    free(memstr);
+    printf("%d", mem);
     return 0;
 }
