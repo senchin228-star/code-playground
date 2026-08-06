@@ -30,6 +30,7 @@ int GetMemTotal()
     }
     int mem = atoi(memory);
     free(string);
+    free(memory);
     return mem;
 }
 int GetMemAvailable()
@@ -59,10 +60,52 @@ int GetMemAvailable()
     }
     int mem = atoi(memory);
     free(string);
+    free(memory);
     return mem;
 }
+int GetDelay(){
+    FILE* cnf = fopen("config.txt", "r");
+    if (cnf == NULL) return 0;
+    char* string = malloc(30 * sizeof(char));
+    char* delstr = malloc(10 * sizeof(char));
+    int delstrpos = 0;
+    while (fgets(string, 30, cnf)){
+        if (!strncmp(string, "delay", 5)){
+            for(int i = 0; string[i] != '\n' && i < 30; i++){
+                if (string[i] >= '0' && string[i] <= '9'){
+                    delstr[delstrpos] = string[i];
+                    delstrpos++;
+                }
+            }
+        }
+    }
+    int delay = 1;
+    if (delstrpos > 0) {
+        delstr[delstrpos] = '\0';
+        delay = atoi(delstr);
+    }
+    free(delstr);
+    free(string);
+    fclose(cnf);
+
+    return delay;
+}
+
 int main(){
+    int delay = 1;
     int first_run = 1;
+    FILE* conf = fopen("config.txt", "r");
+    if (conf == NULL) {
+        conf =  fopen("config.txt", "w");
+        if(conf){
+            fputs("delay = 1\n", conf);
+            fclose(conf);
+        }
+    }
+    else{
+        fclose(conf);
+    }
+    delay = GetDelay();
     while(1){
         if (!first_run) {
             printf("\033[2A");
@@ -72,11 +115,10 @@ int main(){
         int available_mem = GetMemAvailable();
         printf("\033[KTotal Memory: %d MB\n",total_mem / 1024);
         printf("\033[KAvailable Memory: %d MB\n", available_mem / 1024);
-        fflush(stdout);
-        FILE* f = fopen("Memory.txt", "w");
+        FILE* f = fopen("Memory.txt", "a");
         fprintf(f, "Total Memory: %d MB\nAvailable Memory: %d MB\n",total_mem / 1024, available_mem / 1024);
         if (fclose(f)) perror("fclose");
-        sleep(1);
+        sleep(delay);
     }
     return 0;
 }
