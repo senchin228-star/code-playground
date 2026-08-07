@@ -90,6 +90,28 @@ int GetDelay(){
 
     return delay;
 }
+typedef enum {
+    STATUS_OK = 0,
+    STATUS_WARN_LOW_MEMORY,
+    MEMORY_OVERFLOW
+} Status;
+int PrintfStatus(Status statid)
+{
+    switch (statid){
+        case STATUS_OK:
+            fputs("STATUS: OK\n", stdout);
+            return 1;
+        case STATUS_WARN_LOW_MEMORY:
+            fputs("STATUS: WARNING\n", stdout);
+            return 1;
+        case MEMORY_OVERFLOW:
+            fputs("STATUS: MEMORY OVERFLOW\n", stdout);
+            return 1;
+        default:
+            fputs("UNKNOWN_STATUS\n", stdout);
+            return 0;
+    }
+}
 
 int main(){
     int delay = 1;
@@ -106,17 +128,35 @@ int main(){
         fclose(conf);
     }
     delay = GetDelay();
+    printf("\033[K===Memory Monitor (Delay: %d s)===\n", delay);
     while(1){
+        Status stat = STATUS_OK;
         if (!first_run) {
-            printf("\033[2A");
+            printf("\033[4A");
         }
         first_run = 0;
         int total_mem = GetMemTotal();
         int available_mem = GetMemAvailable();
+        int used_memory = total_mem - available_mem;
+
+        
+        if (used_memory * 100 / total_mem > 80){
+            stat = STATUS_WARN_LOW_MEMORY;
+        }
+        if (used_memory * 100 / total_mem > 95){
+            stat = MEMORY_OVERFLOW;
+        }
         printf("\033[KTotal Memory: %d MB\n",total_mem / 1024);
         printf("\033[KAvailable Memory: %d MB\n", available_mem / 1024);
+        printf("\033[KUsed Memory: %dMB (%d%%)\n", used_memory / 1024, used_memory * 100 / total_mem);
+        PrintfStatus(stat);
         FILE* f = fopen("Memory.txt", "a");
-        fprintf(f, "Total Memory: %d MB\nAvailable Memory: %d MB\n",total_mem / 1024, available_mem / 1024);
+        if (f == NULL){
+            perror("memory.txt");
+        }
+        else{
+            fprintf(f, "Total Memory: %d MB\nAvailable Memory: %d MB\n",total_mem / 1024, available_mem / 1024);
+        }
         if (fclose(f)) perror("fclose");
         sleep(delay);
     }
