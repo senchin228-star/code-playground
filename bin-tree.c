@@ -80,38 +80,43 @@ Node *get_max(Node *root)
     }
     return tmp;
 }
-int main(void) { /* TEST */
-    Node *root = NULL;
 
-    int values[] = {50, 30, 70, 20, 40, 60, 80};
-    int n = sizeof(values) / sizeof(values[0]);
+Node* delete_node(Node* root, int val)
+{
+    if (root == NULL) return NULL;
 
-    for (int i = 0; i < n; i++) {
-        root = insert(root, values[i]);
+    if (root->data == val){
+        if (root->left == NULL && root->right == NULL){
+            free(root);
+            return NULL;
+        }
+        else if (root->left != NULL && root->right != NULL){
+            Node *min_node = get_min(root->right);
+
+            root->data = min_node->data;
+
+            root->right = delete_node(root->right, min_node->data);
+        }
+        else{
+            if (root->left == NULL) {
+                Node *tmp = root->right;
+                free(root);
+                return tmp;
+            } else if (root->right == NULL) {
+                Node *tmp = root->left;
+                free(root);
+                return tmp;
+            }
+        }
     }
-
-    printf("In-order traversal: ");
-    print_in_order(root);
-    printf("\n");
-
-    printf("Tree height: %d\n", get_height(root));
-
-    Node *min_node = get_min(root);
-    Node *max_node = get_max(root);
-    if (min_node) printf("Min value: %d\n", min_node->data);
-    if (max_node) printf("Max value: %d\n", max_node->data);
-
-    int target = 40;
-    Node *found = find(root, target);
-    if (found) {
-        printf("Value %d found in tree!\n", target);
-    } else {
-        printf("Value %d not found.\n", target);
+    else{
+        if (val < root->data){
+           root->left = delete_node(root->left, val);
+        }
+        else{
+            root->right = delete_node(root->right, val);
+        }
     }
-
-    free_tree(root);
-    root = NULL;
-
-    return 0;
+    return root;
 }
 
