@@ -117,7 +117,45 @@ int ht_remove(HashTable *HT, char *key)
     return 0;
 }
 
-int main(){}
+int main()
+{
+    HashTable *ht = ht_create(3);   // маленькая capacity, чтобы форсировать коллизии
+    if (ht == NULL) {
+        printf("ht_create failed\n");
+        return 1;
+    }
 
+    ht_insert(ht, "cat", 1);
+    ht_insert(ht, "dog", 2);
+    ht_insert(ht, "fox", 3);
+    ht_insert(ht, "owl", 4);
+    ht_insert(ht, "cat", 100);   // обновление существующего ключа
+
+    int v;
+    int found;
+
+    found = ht_get(ht, "cat", &v);
+    printf("get cat: found=%d value=%d (ожидаем 1, 100)\n", found, v);
+
+    found = ht_get(ht, "nope", &v);
+    printf("get nope: found=%d (ожидаем 0)\n", found);
+
+    printf("size before remove: %zu\n", ht->size);
+
+    int removed = ht_remove(ht, "fox");
+    printf("remove fox: %d (ожидаем 1)\n", removed);
+
+    removed = ht_remove(ht, "nope");
+    printf("remove nope: %d (ожидаем 0)\n", removed);
+
+    found = ht_get(ht, "fox", &v);
+    printf("get fox after remove: found=%d (ожидаем 0)\n", found);
+
+    printf("size after remove: %zu\n", ht->size);
+
+    ht_free(ht);
+    printf("freed ok\n");
+    return 0;
+}
 
 
