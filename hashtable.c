@@ -62,3 +62,19 @@ void ht_insert(HashTable *HT, const char *key, int val)
     HT->buckets[hash] = NewEntry;
     HT->size++;
 }
+
+int ht_get(HashTable *HT, const char *key, int *out_value)
+{
+    unsigned long hash = hash_function(key, HT->capacity); 
+
+    Entry *cur = HT->buckets[hash];
+    while (cur != NULL){
+        if (strcmp(cur->key, key) == 0){
+            *out_value = cur->value;
+            return 1;
+        }
+        cur = cur->next;
+    }
+    return 0;
+}
+
