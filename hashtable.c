@@ -6,7 +6,7 @@ typedef struct Entry{
     char *key;
     int value;
     struct Entry *next;
-} Entry
+} Entry;
 
 typedef struct HashTable{
     Entry **buckets;
@@ -28,7 +28,7 @@ HashTable* ht_create(size_t capacity)
 {
     HashTable *HT = malloc(sizeof(HashTable));
     if (HT == NULL) return NULL;
-    HT->buckets = calloc(capacity * sizeof(Entry*));
+    HT->buckets = calloc(capacity, sizeof(Entry*));
     HT->capacity = capacity;
     HT->size = 0;
     return HT;
@@ -91,4 +91,33 @@ void ht_free(HashTable *HT)
     free(HT->buckets);
     free(HT);
 }
+
+int ht_remove(HashTable *HT, char *key)
+{
+    unsigned long hash = hash_function(key, HT->capacity);
+    
+    Entry *cur = HT->buckets[hash];
+    Entry *prev = NULL;
+    while(cur){
+        if (strcmp(cur->key, key) == 0){
+            if(prev == NULL){
+                HT->buckets[hash] = NULL;
+            }
+            else{
+                prev->next = cur->next;
+            }
+            free(cur->key);
+            free(cur);
+            HT->size--;
+            return 1;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    return 0;
+}
+
+int main(){}
+
+
 
