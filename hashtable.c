@@ -77,4 +77,18 @@ int ht_get(HashTable *HT, const char *key, int *out_value)
     }
     return 0;
 }
+void ht_free(HashTable *HT)
+{
+    for (size_t i = 0; i < HT->capacity; i++){
+        Entry *cur = HT->buckets[i];
+        while(cur){
+            Entry *tmp = cur;
+            free(cur->key);
+            cur = cur->next;
+            free(tmp);
+        }
+    }
+    free(HT->buckets);
+    free(HT);
+}
 
