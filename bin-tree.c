@@ -46,13 +46,30 @@ void free_tree(Node *root)
 	free_tree(root->right);
 	free(root);
 }
-void print_in_order(Node *root)
+
+void callback_int_print(int data, void *userdata)
+{
+    printf("%d\n", data);
+}
+
+void callback_int_sum(int data,void *userdata)
+{
+    int *sum = (int*)userdata;
+    *sum +=data;
+}
+void callback_int_max(int data,void *userdata)
+{
+    int *cur = (int*)userdata;
+    if (data > *cur) *cur = data; 
+}
+
+void int_bin_tree_traverse(Node *root, void (*callback)(int data, void *userdata), void *userdata)
 {
     if (root == NULL) return;
 
-    print_in_order(root->left);
-    printf("%d ", root->data);
-    print_in_order(root->right);
+    int_bin_tree_traverse(root->left, callback, userdata);
+    callback(root->data, userdata);
+    int_bin_tree_traverse(root->right, callback, userdata);
 }
 int get_height(Node *root){
     if (root == NULL) return 0;
@@ -119,4 +136,24 @@ Node* delete_node(Node* root, int val)
     }
     return root;
 }
+
+int main()
+{
+    Node root;
+
+    insert(&root, 10);
+    insert(&root, 15);
+    insert(&root, 5);
+    insert(&root, 3);
+    insert(&root, 42);
+    int_bin_tree_traverse(&root, callback_int_print, NULL);
+    int sum = 0;
+    int_bin_tree_traverse(&root, callback_int_sum, &sum);
+    printf("SUM: %d\n", sum);
+    int max = -999;
+    int_bin_tree_traverse(&root, callback_int_max, &max);
+    printf("MAX: %d\n", max);
+    return 0;
+}
+
 
