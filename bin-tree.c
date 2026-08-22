@@ -46,6 +46,10 @@ void free_tree(Node *root)
 	free_tree(root->right);
 	free(root);
 }
+void callback_int_print_negative(int data, void *userdata)
+{
+	if (data < 0) printf("%d\n", data);
+}
 void callback_int_print_positive(int data, void *userdata)
 {
 	if (data >= 0) printf("%d\n", data);
