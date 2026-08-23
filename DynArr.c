@@ -40,9 +40,9 @@ void da_free(DynArray *arr)
 }
 void da_random(DynArray *arr) 
 {
-    if (arr->capacity <= 0) return;
-    for (int i = 0; i < arr->capacity; i++){
-        int index = rand() % arr->capacity;
+    if (arr->size <= 0) return;
+    for (int i = 0; i < arr->size; i++){
+        int index = rand() % arr->size;
         int tmp = arr->data[index];
         arr->data[index] = arr->data[i];
         arr->data[i] = tmp;
