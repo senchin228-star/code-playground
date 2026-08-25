@@ -42,7 +42,7 @@ void da_random(DynArray *arr)
 {
     if (arr->size <= 0) return;
     for (int i = 0; i < arr->size - 1; i++){
-        int index = i + rand() % arr->size - 1;
+        int index = i + (rand() % arr->size - 1);
         int tmp = arr->data[index];
         arr->data[index] = arr->data[i];
         arr->data[i] = tmp;
