@@ -38,14 +38,17 @@ void da_free(DynArray *arr)
     free(arr->data);
     arr->data = NULL;
 }
-void da_random(DynArray *arr) 
+void da_random(DynArray *arr)
 {
-    if (arr->size <= 0) return;
-    for (int i = 0; i < arr->size - 1; i++){
-        int index = i + (rand() % arr->size - 1);
+    if (arr == NULL || arr->size <= 1) return;
+    
+    for (size_t i = arr->size - 1; i > 0; i--) {
+        size_t index = rand() % (i + 1);
+
         int tmp = arr->data[index];
         arr->data[index] = arr->data[i];
         arr->data[i] = tmp;
     }
 }
+
         
