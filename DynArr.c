@@ -40,15 +40,26 @@ void da_free(DynArray *arr)
 }
 void da_random(DynArray *arr)
 {
-    if (arr == NULL || arr->size <= 1) return
+    if (arr == NULL || arr->size <= 1) return;
         
-    for (size_t i = arr->size - 1; i > 0; i--)
+    for (size_t i = arr->size - 1; i >= 0; i--)
         size_t index = rand() % (i + 1); 
 
         int tmp = arr->data[index];
         arr->data[index] = arr->data[i];
         arr->data[i] = tmp;
     }
+}
+int da_pop(DynArray *arr, int *out)
+{
+    if (arr == NULL || arr->size == 0) return 0;
+
+    arr->size--;
+    if (out != NULL) {
+        *out = arr->data[arr->size];
+    }
+
+    return 1;
 }
 
 
