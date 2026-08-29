@@ -61,6 +61,18 @@ int da_pop(DynArray *arr, int *out)
 
     return 1;
 }
+void da_shrink_to_fit(DynArray *arr) 
+{
+    if (arr == NULL || arr->size == arr->capacity) return;
+    
+    size_t new_capacity = arr->size > 0 ? arr->size : START_CAPACITY;
+
+    int *tmp = realloc(arr->data, new_capacity * sizeof(int));
+    if (tmp != NULL) {
+        arr->data = tmp;
+        arr->capacity = new_capacity;
+    }
+}
 
 
         
