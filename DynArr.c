@@ -73,6 +73,25 @@ void da_shrink_to_fit(DynArray *arr)
         arr->capacity = new_capacity;
     }
 }
+int da_insert(DynArray *arr, size_t index, int val) {
+    if (arr == NULL || index > arr->size) return 0;
+    
+    if (arr->size >= arr->capacity) {
+        size_t new_capacity = arr->capacity * 2;
+        int *tmp = realloc(arr->data, new_capacity * sizeof(int));
+        if (tmp == NULL) return 0;
+        arr->data = tmp;
+        arr->capacity = new_capacity;
+    }
+    for (size_t i = arr->size; i > index; i--) {
+        arr->data[i] = arr->data[i - 1];
+    }
+    
+    arr->data[index] = val;
+    arr->size++;
+    return 1;
+}
+
 
 
         
