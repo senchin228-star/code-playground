@@ -28,29 +28,30 @@ int main()
 
     printf("waiting message on port: 12345\n");
 
-    char buffer[1024];
+    char buffer[1501];
     // client
     struct sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
 
-    int bytes_received = recvfrom(server_sock, buffer, sizeof(buffer) - 1, 0,
-                                  (struct sockaddr *)&client_addr, &client_addr_len);
+    while(1){
+        int bytes_received = recvfrom(server_sock, buffer, sizeof(buffer) - 1, 0,
+                                      (struct sockaddr *)&client_addr, &client_addr_len);
 
-    if (bytes_received < 0) {
-        perror("receive err");
-        return 1;
+        if (bytes_received < 0) {
+            perror("receive err");
+            continue;
+        }
+
+        buffer[bytes_received] = '\0';
+
+        char client_ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+
+        int client_port = ntohs(client_addr.sin_port);
+
+        printf("IP: %s, Port: %d\n", client_ip, client_port);
+        printf("Message: %s\n", buffer);
     }
-
-    buffer[bytes_received] = '\0';
-
-    char client_ip[INET_ADDRSTRLEN];
-
-    inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
-
-    int client_port = ntohs(client_addr.sin_port);
-
-    printf("IP: %s, Port: %d\n", client_ip, client_port);
-    printf("Message: %s\n", buffer);
 
     close(server_sock);
     return 0;
